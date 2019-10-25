@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using SysBigInteger = System.Numerics.BigInteger;
 
-namespace PRNG
+namespace PRNG.BBS
 {
-    class BBS
+    internal class BBS
     {
-        private BitArray BitArray;
-        private BigInteger p;
-        private BigInteger q;
-        private BigInteger N;
-        private BigInteger x;
+        private BitArray _bitArray;
+        private BigInteger _p;
+        private BigInteger _q;
+        private BigInteger _n;
+        private BigInteger _x;
 
         public BitArray GenerateRandomSequence()
         {
@@ -23,33 +17,33 @@ namespace PRNG
 
             while (true)
             {
-                p = BigInteger.genPseudoPrime(200, 100, random);
-                if (!CheckProperRemainder(p)) continue;
+                _p = BigInteger.genPseudoPrime(200, 100, random);
+                if (!CheckProperRemainder(_p)) continue;
                 break;
             }
 
             while (true)
             {
-                q = BigInteger.genPseudoPrime(200, 100, random);
-                if (!CheckProperRemainder(q)) continue;
+                _q = BigInteger.genPseudoPrime(200, 100, random);
+                if (!CheckProperRemainder(_q)) continue;
                 break;
             }
 
-            N = GenerateBlumNumber();
-            x = GenerateSeed();
+            _n = GenerateBlumNumber();
+            _x = GenerateSeed();
             GenerateRandomBitArray();
 
-            return BitArray;
+            return _bitArray;
         }
 
-        private bool CheckProperRemainder(BigInteger bigInteger)
+        private static bool CheckProperRemainder(BigInteger bigInteger)
         {
             return bigInteger % 4 == 3;
         }
 
         private BigInteger GenerateBlumNumber()
         {
-            return p * q;
+            return _p * _q;
         }
 
         private BigInteger GenerateSeed()
@@ -58,7 +52,7 @@ namespace PRNG
             {
                 var random = new Random();
                 var primeNumber = BigInteger.genPseudoPrime(200, 100, random);
-                if (N.gcd(primeNumber) != 1) continue;
+                if (_n.gcd(primeNumber) != 1) continue;
 
                 return primeNumber;
             }
@@ -66,20 +60,20 @@ namespace PRNG
 
         private void GenerateRandomBitArray()
         {
-            BitArray = new BitArray(20000);
+            _bitArray = new BitArray(20000);
 
-            var b = x;
+            var b = _x;
 
-            for (var i = 0; i < BitArray.Length; i++)
+            for (var i = 0; i < _bitArray.Length; i++)
             {
-                b = b.modPow(2, N);
+                b = b.modPow(2, _n);
                 if (b % 2 == 0)
                 {
-                    BitArray[i] = false;
+                    _bitArray[i] = false;
                 }
                 else
                 {
-                    BitArray[i] = true;
+                    _bitArray[i] = true;
                 }
             }
         }
